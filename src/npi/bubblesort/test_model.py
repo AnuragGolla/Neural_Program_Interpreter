@@ -3,9 +3,9 @@ import curses
 import os
 import pickle
 
-from src.npi.add.config import FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH
-from src.npi.add.lib import AdditionEnv, AdditionProgramSet, AdditionTeacher, create_char_map, create_questions, run_npi
-from src.npi.add.model import AdditionNPIModel
+from src.npi.bubblesort.config import FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH
+from src.npi.bubblesort.lib import BubblesortEnv, BubblesortProgramSet, BubblesortTeacher, create_char_map, create_questions, run_npi
+from src.npi.bubblesort.model import BubblesortNPIModel
 from src.npi.core import ResultLogger, RuntimeSystem
 from src.npi.terminal_core import TerminalNPIRunner, Terminal
 
@@ -13,22 +13,22 @@ from src.npi.terminal_core import TerminalNPIRunner, Terminal
 def main(stdscr, model_path: str, num: int, result_logger: ResultLogger):
     terminal = Terminal(stdscr, create_char_map())
     terminal.init_window(FIELD_WIDTH, FIELD_ROW)
-    program_set = AdditionProgramSet()
-    addition_env = AdditionEnv(FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH)
+    program_set = BubblesortProgramSet()
+    bubblesort_env = BubblesortEnv(FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH)
 
     questions = create_questions(num)
     if DEBUG_MODE:
         questions = questions[-num:]
     system = RuntimeSystem(terminal=terminal)
-    npi_model = AdditionNPIModel(system, model_path, program_set)
+    npi_model = BubblesortNPIModel(system, model_path, program_set)
     npi_runner = TerminalNPIRunner(terminal, npi_model, recording=False)
     npi_runner.verbose = DEBUG_MODE
     correct_count = wrong_count = 0
     for data in questions:
-        addition_env.reset()
-        run_npi(addition_env, npi_runner, program_set.ADD, data)
+        bubblesort_env.reset()
+        run_npi(bubblesort_env, npi_runner, program_set.BUBBLESORT, data)     ##CHECK THIS AGAIN !!!!
         result_logger.write(data)
-        terminal.add_log(data)
+        terminal.bubblesort_log(data)
         if data['correct']:
             correct_count += 1
         else:

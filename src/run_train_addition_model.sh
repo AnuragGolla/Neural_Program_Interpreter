@@ -2,7 +2,7 @@
 
 THIS_DIR=$(cd $(dirname $0); pwd)
 DATA_DIR=${THIS_DIR}/../data
-TRAIN_DATA=${1:-${DATA_DIR}/train.pkl}
+TRAIN_DATA=${1:-${DATA_DIR}/add_train.pkl}
 MODEL_OUTPUT=${2:-${DATA_DIR}/addition.model}
 
 export PYTHONPATH=${THIS_DIR}

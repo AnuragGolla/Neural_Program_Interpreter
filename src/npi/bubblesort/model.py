@@ -16,21 +16,19 @@ from keras.optimizers import Adam
 from keras.regularizers import l1, l2
 from keras.utils.visualize_util import plot
 
-from src.npi.add.config import FIELD_ROW, FIELD_DEPTH, PROGRAM_VEC_SIZE, PROGRAM_KEY_VEC_SIZE, FIELD_WIDTH
-from src.npi.add.lib import AdditionProgramSet, AdditionEnv, run_npi, create_questions, AdditionTeacher, \
-    create_random_questions
-from src.npi.core import NPIStep, Program, IntegerArguments, StepOutput, RuntimeSystem, PG_RETURN, StepInOut, StepInput, \
-    to_one_hot_array
-from src.npi.terminal_core import TerminalNPIRunner
-
-__author__ = 'k_morishita'
+from src.npi.bubblesort.config import FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH, PROGRAM_VEC_SIZE, PROGRAM_KEY_VEC_SIZE
+from src.npi.bubblesort.lib import BubblesortEnv, BubblesortProgramSet, BubblesortTeacher, create_char_map, create_random_questions, run_npi
+from src.npi.core import NPIStep, ResultLogger, RuntimeSystem, IntegerArguments, StepInOut, StepInput, StepOutput, to_one_hot_array
+from src.npi.terminal_core import TerminalNPIRunner, Terminal, Program
 
 
-class AdditionNPIModel(NPIStep):
+
+
+class BubblesortNPIModel(NPIStep):
     model = None
     f_enc = None
 
-    def __init__(self, system: RuntimeSystem, model_path: str=None, program_set: AdditionProgramSet=None):
+    def __init__(self, system: RuntimeSystem, model_path: str=None, program_set: BubblesortProgramSet=None):
         self.system = system
         self.model_path = model_path
         self.program_set = program_set
@@ -96,7 +94,7 @@ class AdditionNPIModel(NPIStep):
         plot(self.model, to_file='model.png', show_shapes=True)
 
     def reset(self):
-        super(AdditionNPIModel, self).reset()
+        super(BubblesortNPIModel, self).reset()
         for l in self.model.layers:
             if type(l) is LSTM:
                 l.reset_states()
@@ -189,8 +187,8 @@ class AdditionNPIModel(NPIStep):
         return True
 
     def test_to_subset(self, questions):
-        addition_env = AdditionEnv(FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH)
-        teacher = AdditionTeacher(self.program_set)
+        addition_env = BubblesortEnv(FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH)
+        teacher = BubblesortTeacher(self.program_set)
         npi_runner = TerminalNPIRunner(None, self)
         teacher_runner = TerminalNPIRunner(None, teacher)
         correct_count = wrong_count = 0
@@ -210,7 +208,7 @@ class AdditionNPIModel(NPIStep):
         return str(tuple([(k, d[k]) for k in sorted(d)]))
 
     def do_learn(self, steps_list, epoch, pass_rate=1.0, skip_correct=False):
-        addition_env = AdditionEnv(FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH)
+        addition_env = BubblesortEnv(FIELD_ROW, FIELD_WIDTH, FIELD_DEPTH)
         npi_runner = TerminalNPIRunner(None, self)
         last_weights = None
         correct_count = Counter()

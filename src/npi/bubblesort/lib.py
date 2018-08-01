@@ -6,12 +6,11 @@ import numpy as np
 from src.npi.core import Program, IntegerArguments, StepOutput, NPIStep, PG_CONTINUE, PG_RETURN
 from src.npi.terminal_core import Screen, Terminal
 
-__author__ = 'k_morishita'
 
 
-class AdditionEnv:
+class BubblesortEnv:
     """
-    Environment of Addition
+    Environment of Bubblesort
     """
     def __init__(self, height, width, num_chars):
         self.screen = Screen(height, width)
@@ -21,7 +20,7 @@ class AdditionEnv:
 
     def reset(self):
         self.screen.fill(0)
-        self.pointers = [self.screen.width-1] * self.screen.height  # rightmost
+        self.pointers = [0] * self.screen.height  #leftmost
 
     def get_observation(self) -> np.ndarray:
         value = []
@@ -29,6 +28,8 @@ class AdditionEnv:
             value.append(self.to_one_hot(self.screen[row, self.pointers[row]]))
         return np.array(value)  # shape of FIELD_ROW * FIELD_DEPTH
 
+
+    """ ##############  check all as they are used and move above  ######################### """
     def to_one_hot(self, ch):
         ret = np.zeros((self.num_chars,), dtype=np.int8)
         if 0 <= ch < self.num_chars:
@@ -60,6 +61,13 @@ class AdditionEnv:
         return int(s or "0")
 
 
+
+
+
+
+
+
+""" ###################### CHANGE ################## """
 class MovePtrProgram(Program):
     output_to_env = True
     PTR_IN1 = 0
@@ -75,7 +83,7 @@ class MovePtrProgram(Program):
         left_or_right = args.decode_at(1)
         env.move_pointer(ptr_kind, left_or_right)
 
-
+""" ###################### CHANGE ################## """
 class WriteProgram(Program):
     output_to_env = True
     WRITE_TO_CARRY = 0
@@ -86,8 +94,8 @@ class WriteProgram(Program):
         digit = args.decode_at(1)
         env.write(row, digit+1)
 
-
-class AdditionProgramSet:
+""" ###################### CHANGE ################## """
+class BubblesortProgramSet:
     NOP = Program('NOP')
     MOVE_PTR = MovePtrProgram('MOVE_PTR', 4, 2)  # PTR_KIND(4), LEFT_OR_RIGHT(2)
     WRITE = WriteProgram('WRITE', 2, 10)       # CARRY_OR_OUT(2), DIGITS(10)
@@ -97,6 +105,8 @@ class AdditionProgramSet:
     LSHIFT = Program('LSHIFT')
     RSHIFT = Program('RSHIFT')
 
+
+    """ ###################### CHANGE ################## """
     def __init__(self):
         self.map = {}
         self.program_id = 0
@@ -118,7 +128,9 @@ class AdditionProgramSet:
         return self.map.get(i)
 
 
-class AdditionTeacher(NPIStep):
+
+""" ###################### CHANGE ################## """
+class BubblesortTeacher(NPIStep):
     def __init__(self, program_set: AdditionProgramSet):
         self.pg_set = program_set
         self.step_queue = None
@@ -151,6 +163,9 @@ class AdditionTeacher(NPIStep):
     def exit_function(self):
         self.step_queue = self.step_queue_stack.pop()
 
+
+
+""" ###################### CHANGE ################## """
     def step(self, env_observation: np.ndarray, pg: Program, arguments: IntegerArguments) -> StepOutput:
         if not self.step_queue:
             self.step_queue = self.sub_program[pg.program_id](env_observation, arguments)
@@ -172,6 +187,8 @@ class AdditionTeacher(NPIStep):
     def pg_primitive(env_observation: np.ndarray, arguments: IntegerArguments):
         return None
 
+
+""" ###################### CHANGE ################## """
     def pg_add(self, env_observation: np.ndarray, arguments: IntegerArguments):
         ret = []
         (in1, in2, carry, output), (a1, a2, a3) = self.decode_params(env_observation, arguments)
@@ -227,12 +244,16 @@ class AdditionTeacher(NPIStep):
         return ret
 
 
+
+""" ###################### CHANGE ################## """
 def create_char_map():
     char_map = dict((i+1, "%s" % i) for i in range(10))
     char_map[0] = ' '
     return char_map
 
 
+
+""" ###################### CHANGE ################## """
 def create_questions(num=100, max_number=10000):
     questions = []
     for in1 in range(10):
@@ -253,6 +274,7 @@ def create_questions(num=100, max_number=10000):
     return questions
 
 
+""" ###################### CHANGE ################## """
 def create_random_questions(num=100, max_number=10000):
     questions = []
     for _ in range(num):
@@ -260,6 +282,8 @@ def create_random_questions(num=100, max_number=10000):
     return questions
 
 
+
+""" ###################### CHANGE ################## """
 def run_npi(addition_env, npi_runner, program, data):
     data['expect'] = data['in1'] + data['in2']
 

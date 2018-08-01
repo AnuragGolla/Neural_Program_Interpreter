@@ -2,8 +2,8 @@
 
 THIS_DIR=$(cd $(dirname $0); pwd)
 DATA_DIR=${THIS_DIR}/../data
-OUTPUT_FILE=${1:-${DATA_DIR}/train.pkl}
-LOG=train_result.log
+OUTPUT_FILE=${1:-${DATA_DIR}/add_train.pkl}
+LOG=add_train_result.log
 export PYTHONPATH=${THIS_DIR}
 cd $THIS_DIR
 

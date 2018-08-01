@@ -3,7 +3,7 @@
 import curses
 import numpy as np
 
-from npi.core import Program, IntegerArguments, NPIStep, StepOutput, StepInput, StepInOut
+from src.npi.core import Program, IntegerArguments, NPIStep, StepOutput, StepInput, StepInOut
 
 __author__ = 'k_morishita'
 
@@ -94,6 +94,15 @@ class Terminal:
             line = str(line) + " " * (self.LOG_WINDOW_WIDTH - len(str(line)))
             self.log_window.addstr(i, 0, line)
         self.log_window.refresh()
+
+
+    def bubblesort_log(self, line):
+        pass
+        ## implement this for bubblesort
+
+
+
+
 
     @staticmethod
     def ignore_error_add_str(win, y, x, s, attr=curses.A_NORMAL):
